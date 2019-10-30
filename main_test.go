@@ -61,7 +61,7 @@ func TestGetNonExistentEvent(t *testing.T) {
 
 func TestCreateEvent(t *testing.T) {
 
-	payload := []byte(`{"name":  "test event","price": 11.22}`)
+	payload := []byte(`{"name":  "test event","level": 11.22}`)
 
 	req, _ := http.NewRequest("POST", "/event", bytes.NewBuffer(payload))
 	response := executeRequest(req)
@@ -75,8 +75,8 @@ func TestCreateEvent(t *testing.T) {
 		t.Errorf("Expected event name to be 'test event'. Got '%v'", m["name"])
 	}
 
-	if m["price"] != 11.22 {
-		t.Errorf("Expected event price to be '11.22'. Got '%v'", m["price"])
+	if m["leve"] != 11.22 {
+		t.Errorf("Expected event level to be '11.22'. Got '%v'", m["level"])
 	}
 
 	// the id is compared to 1.0 because JSON unmarshaling converts numbers to
@@ -111,7 +111,7 @@ func TestUpdateEvent(t *testing.T) {
 	var originalEvent map[string]interface{}
 	json.Unmarshal(response.Body.Bytes(), &originalEvent)
 
-	payload := []byte(`{"name":"test event - updated name","price":11.22}`)
+	payload := []byte(`{"name":"test event - updated name","level":11.22}`)
 
 	req, _ = http.NewRequest("PUT", "/event/1", bytes.NewBuffer(payload))
 	response = executeRequest(req)
@@ -129,8 +129,8 @@ func TestUpdateEvent(t *testing.T) {
 		t.Errorf("Expected the name to change from '%v' to '%v'. Got '%v'", originalEvent["name"], m["name"], m["name"])
 	}
 
-	if m["price"] == originalEvent["price"] {
-		t.Errorf("Expected the price to change from '%v' to '%v'. Got '%v'", originalEvent["price"], m["price"], m["price"])
+	if m["level"] == originalEvent["level"] {
+		t.Errorf("Expected the level to change from '%v' to '%v'. Got '%v'", originalEvent["level"], m["level"], m["level"])
 	}
 }
 
