@@ -2,7 +2,7 @@ sudo: false
 
 dist: xenial
 
-language: go
+language: minimal
 
 services:
   - docker
