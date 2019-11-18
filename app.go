@@ -19,12 +19,14 @@ func (a *App) Initialize() {
 }
 
 func (a *App) Run(addr string) {
+	a.Initialize()
 	log.Fatal(http.ListenAndServe(":8000", a.Router))
 }
 
 func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/events", a.getEvents).Methods("GET")
 	a.Router.HandleFunc("/event", a.createEvent).Methods("POST")
+	a.Router.HandleFunc("/event/{id}", a.getEvent).Methods("GET")
 	a.Router.HandleFunc("/event/{id:[0-9]+}", a.getEvent).Methods("GET")
 	a.Router.HandleFunc("/event/{id:[0-9]+}", a.updateEvent).Methods("PUT")
 	a.Router.HandleFunc("/event/{id:[0-9]+}", a.deleteEvent).Methods("DELETE")
@@ -43,31 +45,25 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 }
 
 func (a *App) getEvent(w http.ResponseWriter, r *http.Request) {
+
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
-	if err != nil {
+	id := vars["id"]
+	if id == "" {
 		respondWithError(w, http.StatusBadRequest, "Invalid event ID")
 		return
 	}
+	i, _ := strconv.Atoi(id)
 
-	p := event{ID: id}
-	if err := p.getEvent(); err != nil {
+	p := event{ID: i}
+	data, err := p.getEvent(id)
+	if err != nil {
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, p)
+	respondWithJSON(w, http.StatusOK, data)
 }
 
 func (a *App) getEvents(w http.ResponseWriter, r *http.Request) {
-	count, _ := strconv.Atoi(r.FormValue("count"))
-	start, _ := strconv.Atoi(r.FormValue("start"))
-
-	if count > 10 || count < 1 {
-		count = 10
-	}
-	if start < 0 {
-		start = 0
-	}
 
 	events, err := getEvents()
 	if err != nil {
