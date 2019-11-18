@@ -1,9 +1,19 @@
+sudo: false
+
+dist: xenial
+
 language: go
+
+services:
+  - docker
+
+os:
+  - linux
 
 # You don't need to test on very old versions of the Go compiler. It's the user's
 # responsibility to keep their compiler up to date.
 go:
-- 1.13.x
+  - 1.13.x
 
 # Only clone the most recent commit.
 git:
@@ -13,7 +23,8 @@ git:
 notifications:
   email: false
 
-# script always runs to completion (set +e). If we have linter issues AND a
-# failing test, we want to see both. Configure golangci-lint with a
-# .golangci.yml file at the top level of your repo.
-script: go test -v
+before_install:
+  - docker build -t quiet-backend .
+
+script:
+  - docker run quiet-backend bash -c "go test -v ./..."
