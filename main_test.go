@@ -1,7 +1,7 @@
 package main_test
 
 import (
-	"."
+	"github.com/igormp/quiet-backend"
 	"bytes"
 	"encoding/json"
 	"net/http"
