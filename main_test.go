@@ -20,18 +20,6 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func TestEmptyEvents(t *testing.T) {
-
-	req, _ := http.NewRequest("GET", "/events", nil)
-	response := executeRequest(req)
-
-	checkResponseCode(t, http.StatusOK, response.Code)
-
-	if body := response.Body.String(); body != "[]" {
-		t.Errorf("Expected an empty array. Got %s", body)
-	}
-}
-
 func executeRequest(req *http.Request) *httptest.ResponseRecorder {
 	rr := httptest.NewRecorder()
 	a.Router.ServeHTTP(rr, req)
@@ -87,9 +75,14 @@ func TestCreateEvent(t *testing.T) {
 }
 
 func TestGetEvent(t *testing.T) {
-	addEvents(1)
-
 	req, _ := http.NewRequest("GET", "/event/1", nil)
+	response := executeRequest(req)
+
+	checkResponseCode(t, http.StatusOK, response.Code)
+}
+
+func TestGetEvents(t *testing.T) {
+	req, _ := http.NewRequest("GET", "/events", nil)
 	response := executeRequest(req)
 
 	checkResponseCode(t, http.StatusOK, response.Code)
